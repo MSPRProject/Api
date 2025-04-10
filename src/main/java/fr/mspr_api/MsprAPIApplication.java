@@ -1,13 +1,13 @@
-package fr.mspr;
+package fr.mspr_api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MsprApplication {
+public class MsprAPIApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MsprApplication.class, args);
+		SpringApplication.run(MsprAPIApplication.class, args);
 	}
 
 }

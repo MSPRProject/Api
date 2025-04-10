@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>fr</groupId>
-	<artifactId>mspr</artifactId>
+	<artifactId>mspr_api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>mspr</name>
+	<name>mspr_api</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
