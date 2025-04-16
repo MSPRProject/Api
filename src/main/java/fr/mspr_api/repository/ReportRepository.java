@@ -12,7 +12,7 @@ import fr.mspr_api.component.Report;
 @Repository
 public interface ReportRepository extends CrudRepository<Report, Integer> {
     Report findByReportId(Integer reportId);
-    Report findByDate(Timestamp date);
+    List<Report> findByDate(Timestamp date);
     Report findByNewCases(Integer newCases);
     Report findByNewDeaths(Integer newDeaths);
 
