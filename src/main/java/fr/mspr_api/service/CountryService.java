@@ -19,6 +19,15 @@ public class CountryService {
     }
 
     /**
+     * Get a list of all countries.
+     * @return A list of Country objects.
+     * This method retrieves all countries from the database.
+     */
+    public Iterable<Country> getAllCountries() {
+        return countryRepository.findAll();
+    }
+
+    /**
      * Create a new country.
      * @param country The Country object to create.
      * @return The created Country object.
