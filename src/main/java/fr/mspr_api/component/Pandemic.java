@@ -26,15 +26,15 @@ public class Pandemic {
     @Schema(description = "The unique ID of the pandemic.", example = "1")
     private Integer pandemicId;
 
-    @Column(name = "name")
+    @Column(name = "name", length = 100)
     @Schema(description = "The name of the pandemic.", example = "COVID-19")
     private String name;
 
-    @Column(name = "pathogen")
+    @Column(name = "pathogen", length = 100)
     @Schema(description = "The pathogen responsible for the pandemic.", example = "SARS-CoV-2")
     private String pathogen;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     @Schema(description = "A description of the pandemic.", example = "A global pandemic caused by the SARS-CoV-2 virus.")
     private String description;
 
@@ -48,7 +48,7 @@ public class Pandemic {
     @Schema(description = "The end date of the pandemic.", example = "2022-12-31T23:59:59Z")
     private Timestamp endDate;
 
-    @Column(name = "notes")
+    @Column(name = "notes", columnDefinition = "TEXT")
     @Schema(description = "Additional notes about the pandemic.", example = "Vaccination campaigns were launched globally.")
     private String notes;
 

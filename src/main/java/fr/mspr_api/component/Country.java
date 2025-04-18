@@ -28,15 +28,15 @@ public class Country {
     private Integer countryId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "continent")
-    @Schema(description = "The continent where the country is located.", example = "Europe")
+    @Column(name = "continent", length = 20)
+    @Schema(description = "The continent where the country is located.", example = "EUROPE")
     private Continent continent;
 
-    @Column(name = "name")
+    @Column(name = "name", length = 50)
     @Schema(description = "The name of the country.", example = "France")
     private String name;
 
-    @Column(name = "iso3")
+    @Column(name = "iso3", length = 3)
     @Schema(description = "The ISO 3166-1 alpha-3 code of the country.", example = "FRA")
     private String iso3;
 
