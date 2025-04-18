@@ -22,6 +22,22 @@ public class CountryController {
     }
 
     /**
+     * Get a list of all countries.
+     * @return A list of Country objects.
+     * This method retrieves all countries from the database.
+     */
+    @Operation(summary = "Get all countries", description = "Retrieve a list of all countries.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Countries retrieved successfully",
+                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Country.class))),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @GetMapping
+    public Iterable<Country> getAllCountries() {
+        return countryService.getAllCountries();
+    }
+
+    /**
      * Create a new country.
      * @param country The Country object to create.
      * @return The created Country object.

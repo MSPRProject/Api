@@ -19,6 +19,13 @@ public class PandemicService {
     }
 
     /**
+     * Get a list of all pandemics.
+     */
+    public Iterable<Pandemic> getAllPandemics() {
+        return pandemicRepository.findAll();
+    }
+
+    /**
      * Create a new pandemic.
      * @param pandemic The Pandemic object to create.
      * @return The created Pandemic object.
