@@ -29,7 +29,7 @@ public class InfectionService {
      * This method retrieves infections based on the pandemic.
      */
     public List<Infection> getInfectionsByPandemic(Pandemic pandemic) {
-        return infectionRepository.findByPandemic(pandemic);
+        return infectionRepository.findAllByPandemic(pandemic);
     }
 
     /**
@@ -39,7 +39,7 @@ public class InfectionService {
      * This method retrieves infections based on the country.
      */
     public List<Infection> getInfectionsByCountry(Country country) {
-        return infectionRepository.findByCountry(country);
+        return infectionRepository.findAllByCountry(country);
     }
 
     /**

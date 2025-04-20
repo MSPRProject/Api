@@ -1,10 +1,6 @@
 package fr.mspr_api.component;
 
-import java.sql.Timestamp;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -14,11 +10,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Table(name = "Pandemic")
 @Schema(description = "Represents a pandemic entity.")
 public class Pandemic {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pandemic_id")
@@ -26,30 +25,45 @@ public class Pandemic {
     @Schema(description = "The unique ID of the pandemic.", example = "1")
     private Integer pandemicId;
 
-    @Column(name = "name", length = 100)
+    @Column(name = "name", length = 100, unique = true)
     @Schema(description = "The name of the pandemic.", example = "COVID-19")
     private String name;
 
     @Column(name = "pathogen", length = 100)
-    @Schema(description = "The pathogen responsible for the pandemic.", example = "SARS-CoV-2")
+    @Schema(
+        description = "The pathogen responsible for the pandemic.",
+        example = "SARS-CoV-2"
+    )
     private String pathogen;
 
     @Column(name = "description", columnDefinition = "TEXT")
-    @Schema(description = "A description of the pandemic.", example = "A global pandemic caused by the SARS-CoV-2 virus.")
+    @Schema(
+        description = "A description of the pandemic.",
+        example = "A global pandemic caused by the SARS-CoV-2 virus."
+    )
     private String description;
 
     @Column(name = "start_date")
     @JsonProperty("start_date")
-    @Schema(description = "The start date of the pandemic.", example = "2020-01-01T00:00:00Z")
+    @Schema(
+        description = "The start date of the pandemic.",
+        example = "2020-01-01T00:00:00Z"
+    )
     private Timestamp startDate;
 
     @Column(name = "end_date")
     @JsonProperty("end_date")
-    @Schema(description = "The end date of the pandemic.", example = "2022-12-31T23:59:59Z")
+    @Schema(
+        description = "The end date of the pandemic.",
+        example = "2022-12-31T23:59:59Z"
+    )
     private Timestamp endDate;
 
     @Column(name = "notes", columnDefinition = "TEXT")
-    @Schema(description = "Additional notes about the pandemic.", example = "Vaccination campaigns were launched globally.")
+    @Schema(
+        description = "Additional notes about the pandemic.",
+        example = "Vaccination campaigns were launched globally."
+    )
     private String notes;
 
     @OneToMany(
@@ -57,11 +71,12 @@ public class Pandemic {
         cascade = CascadeType.ALL,
         orphanRemoval = true
     )
-    @Schema(description = "The list of infections associated with the pandemic.")
+    @Schema(
+        description = "The list of infections associated with the pandemic."
+    )
     private List<Infection> infections;
 
-    public Pandemic() {
-    }
+    public Pandemic() {}
 
     /**
      * Constructor for Pandemic class.
@@ -71,8 +86,15 @@ public class Pandemic {
      * @param startDate Timestamp indicating when the pandemic started.
      * @param endDate Timestamp indicating when the pandemic ended.
      * @param notes String containing additional notes about the pandemic.
-     */ 
-    public Pandemic(String name, String pathogen, String description, Timestamp startDate, Timestamp endDate, String notes) {
+     */
+    public Pandemic(
+        String name,
+        String pathogen,
+        String description,
+        Timestamp startDate,
+        Timestamp endDate,
+        String notes
+    ) {
         this.name = name;
         this.pathogen = pathogen;
         this.description = description;

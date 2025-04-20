@@ -1,9 +1,6 @@
 package fr.mspr_api.component;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,11 +12,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 
 @Entity
 @Table(name = "Country")
 @Schema(description = "Represents a country entity.")
 public class Country {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "country_id")
@@ -29,19 +28,28 @@ public class Country {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "continent", length = 20)
-    @Schema(description = "The continent where the country is located.", example = "EUROPE")
+    @Schema(
+        description = "The continent where the country is located.",
+        example = "EUROPE"
+    )
     private Continent continent;
 
-    @Column(name = "name", length = 50)
+    @Column(name = "name", length = 50, unique = true)
     @Schema(description = "The name of the country.", example = "France")
     private String name;
 
-    @Column(name = "iso3", length = 3)
-    @Schema(description = "The ISO 3166-1 alpha-3 code of the country.", example = "FRA")
+    @Column(name = "iso3", length = 3, unique = true)
+    @Schema(
+        description = "The ISO 3166-1 alpha-3 code of the country.",
+        example = "FRA"
+    )
     private String iso3;
 
     @Column(name = "population")
-    @Schema(description = "The population of the country.", example = "67000000")
+    @Schema(
+        description = "The population of the country.",
+        example = "67000000"
+    )
     private Integer population;
 
     @OneToMany(
@@ -52,8 +60,7 @@ public class Country {
     @Schema(description = "The list of infections associated with the country.")
     private List<Infection> infections;
 
-    public Country() {
-    }
+    public Country() {}
 
     /**
      * Constructor for Country class.
@@ -62,7 +69,12 @@ public class Country {
      * @param iso3 String representing the ISO 3166-1 alpha-3 code of the country.
      * @param population Integer representing the population of the country.
      */
-    public Country(Continent continent, String name, String iso3, Integer population) {
+    public Country(
+        Continent continent,
+        String name,
+        String iso3,
+        Integer population
+    ) {
         this.continent = continent;
         this.name = name;
         this.iso3 = iso3;
