@@ -22,26 +22,6 @@ public class ReportService {
     }
 
     /**
-     * Fetch reports by pandemic.
-     * @param idPandemic The ID of the pandemic to filter reports.
-     * @return List of reports associated with the given pandemic.
-     * This method retrieves all reports from the database.
-     */
-    public List<Report> getReportsByPandemic(Integer idPandemic) {
-        return reportRepository.findByPandemicId(idPandemic);
-    }
-
-    /**
-     * Fetch reports by country.
-     * @param idCountry The ID of the country to filter reports.
-     * @return List of reports associated with the given country.
-     * This method retrieves reports based on the country.
-     */
-    public List<Report> getReportsByCountry(Integer idCountry) {
-        return reportRepository.findByCountryId(idCountry);
-    }
-
-    /**
      * Fetch reports by date.
      * @param date The date to filter reports.
      * @return List of reports associated with the given date.
