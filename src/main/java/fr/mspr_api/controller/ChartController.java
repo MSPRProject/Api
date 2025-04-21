@@ -135,7 +135,7 @@ public class ChartController {
             ),
         }
     )
-    @GetMapping("/chart/totalCasesDeathsByCountryAndPandemic")
+    @GetMapping("/totalCasesDeathsByCountryAndPandemic")
     public ResponseEntity<String> getTotalCasesDeathsByCountryAndPandemic(
         Optional<Integer> countryId,
         Optional<Integer> pandemicId
@@ -181,7 +181,7 @@ public class ChartController {
             ),
         }
     )
-    @GetMapping("/chart/totalCasesDeathsByCountryAndPandemic")
+    @GetMapping("/top10CountriesByCasesOrDeaths")
     public ResponseEntity<String> getTop10CountriesByCasesOrDeaths() {
         try {
             String chartJson = chartService.getTop10CountriesByCasesOrDeaths();
