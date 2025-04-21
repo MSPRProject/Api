@@ -27,8 +27,8 @@ public class ChartService {
 
     public class ChartGeneratingException extends Exception {
 
-        public ChartGeneratingException(String message) {
-            super(message);
+        public ChartGeneratingException() {
+            super("{\"message\":\"Chart is being generated. Please try again later.\"}");
         }
     }
 
@@ -79,9 +79,7 @@ public class ChartService {
         }
 
         if (generatingCharts.contains(cacheKey)) {
-            throw new ChartGeneratingException(
-                "Chart is being generated. Please try again later."
-            );
+            throw new ChartGeneratingException();
         }
 
         generatingCharts.add(cacheKey);
@@ -138,9 +136,7 @@ public class ChartService {
             }
         }).start();
 
-        throw new ChartGeneratingException(
-            "Chart is being generated. Please try again later."
-        );
+        throw new ChartGeneratingException();
     }
 
     public String getNewCasesDeathsOverTime(Country country, Pandemic pandemic)
@@ -159,9 +155,7 @@ public class ChartService {
         }
 
         if (generatingCharts.contains(cacheKey)) {
-            throw new ChartGeneratingException(
-                "Chart is being generated. Please try again later."
-            );
+            throw new ChartGeneratingException();
         }
 
         generatingCharts.add(cacheKey);
@@ -240,9 +234,7 @@ public class ChartService {
             }
         }).start();
 
-        throw new ChartGeneratingException(
-            "Chart is being generated. Please try again later."
-        );
+        throw new ChartGeneratingException();
     }
 
     public String getTotalCasesDeathsByCountryAndPandemic(
@@ -269,9 +261,7 @@ public class ChartService {
         }
 
         if (generatingCharts.contains(cacheKey)) {
-            throw new ChartGeneratingException(
-                "Chart is being generated. Please try again later."
-            );
+            throw new ChartGeneratingException();
         }
 
         generatingCharts.add(cacheKey);
@@ -369,9 +359,7 @@ public class ChartService {
             }
         }).start();
 
-        throw new ChartGeneratingException(
-            "Chart is being generated. Please try again later."
-        );
+        throw new ChartGeneratingException();
     }
 
     public String getTop10CountriesByCasesOrDeaths(Optional<Pandemic> pandemic)
@@ -386,9 +374,7 @@ public class ChartService {
         }
 
         if (generatingCharts.contains(cacheKey)) {
-            throw new ChartGeneratingException(
-                "Chart is being generated. Please try again later."
-            );
+            throw new ChartGeneratingException();
         }
 
         generatingCharts.add(cacheKey);
@@ -461,9 +447,7 @@ public class ChartService {
             }
         }).start();
 
-        throw new ChartGeneratingException(
-            "Chart is being generated. Please try again later."
-        );
+        throw new ChartGeneratingException();
     }
 
     public String getPandemicComparison()
@@ -477,9 +461,7 @@ public class ChartService {
         }
 
         if (generatingCharts.contains(cacheKey)) {
-            throw new ChartGeneratingException(
-                "Chart is being generated. Please try again later."
-            );
+            throw new ChartGeneratingException();
         }
 
         generatingCharts.add(cacheKey);
@@ -546,9 +528,7 @@ public class ChartService {
             }
         }).start();
 
-        throw new ChartGeneratingException(
-            "Chart is being generated. Please try again later."
-        );
+        throw new ChartGeneratingException();
     }
 
     public void pruneCaches() {
