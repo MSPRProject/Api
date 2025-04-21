@@ -2,6 +2,8 @@ package fr.mspr_api.controller;
 
 import fr.mspr_api.component.Country;
 import fr.mspr_api.component.Pandemic;
+import fr.mspr_api.repository.CountryRepository;
+import fr.mspr_api.repository.PandemicRepository;
 import fr.mspr_api.service.ChartService;
 import fr.mspr_api.service.ChartService.ChartGeneratingException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +25,12 @@ public class ChartController {
 
     @Autowired
     private ChartService chartService;
+
+    @Autowired
+    private PandemicRepository pandemicRepository;
+
+    @Autowired
+    private CountryRepository countryRepository;
 
     @Operation(
         summary = "Get infection distribution by continent",
@@ -57,6 +65,11 @@ public class ChartController {
             anyOf = { Pandemic.class, String.class }
         ) Pandemic pandemic
     ) {
+        // The objects received are transient, so we need to fetch the pandemic from the database
+        pandemic = pandemicRepository
+            .findById(pandemic.getPandemicId())
+            .orElseThrow();
+
         try {
             String chartJson = chartService.getInfectionDistributionByContinent(
                 pandemic
@@ -107,6 +120,14 @@ public class ChartController {
             anyOf = { Pandemic.class, String.class }
         ) Pandemic pandemic
     ) {
+        // The objects received are transient, so we need to fetch them from the database
+        country = countryRepository
+            .findById(country.getCountryId())
+            .orElseThrow();
+        pandemic = pandemicRepository
+            .findById(pandemic.getPandemicId())
+            .orElseThrow();
+
         try {
             String chartJson = chartService.getNewCasesDeathsOverTime(
                 country,
@@ -158,6 +179,13 @@ public class ChartController {
             anyOf = { Pandemic.class, String.class }
         ) Optional<Pandemic> pandemic
     ) {
+        // The objects received are transient, so we need to fetch them from the database
+        country = country.map(c ->
+            countryRepository.findById(c.getCountryId()).orElseThrow()
+        );
+        pandemic = pandemic.map(p ->
+            pandemicRepository.findById(p.getPandemicId()).orElseThrow()
+        );
         try {
             String chartJson =
                 chartService.getTotalCasesDeathsByCountryAndPandemic(
@@ -207,6 +235,9 @@ public class ChartController {
             required = false
         ) Optional<Pandemic> pandemic
     ) {
+        pandemic = pandemic.map(p ->
+            pandemicRepository.findById(p.getPandemicId()).orElseThrow()
+        );
         try {
             String chartJson = chartService.getTop10CountriesByCasesOrDeaths(
                 pandemic
