@@ -38,9 +38,6 @@ public class ChartService {
     private static final String CACHE_DIR = "chart_cache";
 
     @Autowired
-    private final CountryRepository countryRepository;
-
-    @Autowired
     private final InfectionRepository infectionRepository;
 
     @Autowired
@@ -54,12 +51,10 @@ public class ChartService {
     );
 
     public ChartService(
-        CountryRepository countryRepository,
         InfectionRepository infectionRepository,
         PandemicRepository pandemicRepository,
         ReportRepository reportRepository
     ) {
-        this.countryRepository = countryRepository;
         this.infectionRepository = infectionRepository;
         this.pandemicRepository = pandemicRepository;
         this.reportRepository = reportRepository;
@@ -71,10 +66,10 @@ public class ChartService {
         }
     }
 
-    public String getInfectionDistributionByContinent(Integer pandemicId)
+    public String getInfectionDistributionByContinent(Pandemic pandemic)
         throws IOException, ChartGeneratingException {
         final String cacheKey =
-            "infectionDistributionByContinent_" + pandemicId;
+            "infectionDistributionByContinent_" + pandemic.getPandemicId();
         final String cacheFilePath = CACHE_DIR + "/" + cacheKey + ".json";
 
         File cacheFile = new File(cacheFilePath);
@@ -90,11 +85,6 @@ public class ChartService {
         }
 
         generatingCharts.add(cacheKey);
-
-        Pandemic pandemic = pandemicRepository
-            .findById(pandemicId)
-            .orElseThrow(() -> new EntityNotFoundException("Pandemic not found")
-            );
 
         new Thread(() -> {
             try {
@@ -153,12 +143,13 @@ public class ChartService {
         );
     }
 
-    public String getNewCasesDeathsOverTime(
-        Integer countryId,
-        Integer pandemicId
-    ) throws IOException, ChartGeneratingException {
+    public String getNewCasesDeathsOverTime(Country country, Pandemic pandemic)
+        throws IOException, ChartGeneratingException {
         final String cacheKey =
-            "newCasesDeathsOverTime_" + countryId + "_" + pandemicId;
+            "newCasesDeathsOverTime_" +
+            country.getCountryId() +
+            "_" +
+            pandemic.getPandemicId();
         final String cacheFilePath = CACHE_DIR + "/" + cacheKey + ".json";
 
         File cacheFile = new File(cacheFilePath);
@@ -176,8 +167,8 @@ public class ChartService {
         generatingCharts.add(cacheKey);
 
         Infection infection = infectionRepository.findByPandemicIdAndCountryId(
-            pandemicId,
-            countryId
+            pandemic.getPandemicId(),
+            country.getCountryId()
         );
 
         new Thread(() -> {
@@ -255,14 +246,20 @@ public class ChartService {
     }
 
     public String getTotalCasesDeathsByCountryAndPandemic(
-        Optional<Integer> countryId,
-        Optional<Integer> pandemicId
+        Optional<Country> country,
+        Optional<Pandemic> pandemic
     ) throws IOException, ChartGeneratingException {
         final String cacheKey =
             "totalCasesDeathsByCountryAndPandemic_" +
-            countryId +
+            country
+                .map(Country::getCountryId)
+                .map(String::valueOf)
+                .orElse("ALL") +
             "_" +
-            pandemicId;
+            pandemic
+                .map(Pandemic::getPandemicId)
+                .map(String::valueOf)
+                .orElse("ALL");
         final String cacheFilePath = CACHE_DIR + "/" + cacheKey + ".json";
 
         File cacheFile = new File(cacheFilePath);
@@ -282,35 +279,19 @@ public class ChartService {
         new Thread(() -> {
             try {
                 Iterable<Infection> infections;
-                Optional<Country> country;
-                Optional<Pandemic> pandemic;
 
-                if (countryId.isPresent() && pandemicId.isPresent()) {
+                if (country.isPresent() && pandemic.isPresent()) {
                     infections = List.of(
                         infectionRepository.findByPandemicIdAndCountryId(
-                            pandemicId.get(),
-                            countryId.get()
+                            pandemic.get().getPandemicId(),
+                            country.get().getCountryId()
                         )
                     );
-                } else if (countryId.isPresent()) {
-                    country = countryRepository.findById(countryId.get());
-                    if (!country.isPresent()) {
-                        generatingCharts.remove(cacheKey);
-                        throw new IllegalArgumentException("Country not found");
-                    }
-
+                } else if (country.isPresent()) {
                     infections = infectionRepository.findAllByCountry(
                         country.get()
                     );
-                } else if (pandemicId.isPresent()) {
-                    pandemic = pandemicRepository.findById(pandemicId.get());
-                    if (!pandemic.isPresent()) {
-                        generatingCharts.remove(cacheKey);
-                        throw new IllegalArgumentException(
-                            "Pandemic not found"
-                        );
-                    }
-
+                } else if (pandemic.isPresent()) {
                     infections = infectionRepository.findAllByPandemic(
                         pandemic.get()
                     );
@@ -393,9 +374,8 @@ public class ChartService {
         );
     }
 
-    public String getTop10CountriesByCasesOrDeaths(
-        Optional<Integer> pandemicId
-    ) throws IOException, ChartGeneratingException {
+    public String getTop10CountriesByCasesOrDeaths(Optional<Pandemic> pandemic)
+        throws IOException, ChartGeneratingException {
         final String cacheKey = "top10CountriesByCasesOrDeaths";
         final String cacheFilePath = CACHE_DIR + "/" + cacheKey + ".json";
 
@@ -415,10 +395,6 @@ public class ChartService {
 
         new Thread(() -> {
             try {
-                Optional<Pandemic> pandemic = pandemicId.map(id ->
-                    pandemicRepository.findById(id).get()
-                );
-
                 Iterable<Infection> infections = pandemic.isPresent()
                     ? infectionRepository.findAllByPandemic(pandemic.get())
                     : infectionRepository.findAll();

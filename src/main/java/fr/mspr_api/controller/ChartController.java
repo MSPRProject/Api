@@ -1,9 +1,12 @@
 package fr.mspr_api.controller;
 
+import fr.mspr_api.component.Country;
+import fr.mspr_api.component.Pandemic;
 import fr.mspr_api.service.ChartService;
 import fr.mspr_api.service.ChartService.ChartGeneratingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.Optional;
@@ -49,11 +52,14 @@ public class ChartController {
     )
     @GetMapping("/infectionDistributionByContinent")
     public ResponseEntity<?> getInfectionDistributionByContinent(
-        Integer pandemicId
+        @Schema(
+            description = "The pandemic to filter by (either a JSON object with minimally {pandemic_id: number} or a link to the pandemic)",
+            anyOf = { Pandemic.class, String.class }
+        ) Pandemic pandemic
     ) {
         try {
             String chartJson = chartService.getInfectionDistributionByContinent(
-                pandemicId
+                pandemic
             );
             return ResponseEntity.ok(chartJson);
         } catch (ChartGeneratingException e) {
@@ -92,13 +98,19 @@ public class ChartController {
     )
     @GetMapping("/newCasesDeathsOverTime")
     public ResponseEntity<?> getNewCasesDeathsOverTime(
-        Integer countryId,
-        Integer pandemicId
+        @Schema(
+            description = "The country to filter by (either a JSON object with minimally {country_id: number}, or a link to the country)",
+            anyOf = { Country.class, String.class }
+        ) Country country,
+        @Schema(
+            description = "The pandemic to filter by (either a JSON object with minimally {pandemic_id: number}, or a link to the pandemic)",
+            anyOf = { Pandemic.class, String.class }
+        ) Pandemic pandemic
     ) {
         try {
             String chartJson = chartService.getNewCasesDeathsOverTime(
-                countryId,
-                pandemicId
+                country,
+                pandemic
             );
             return ResponseEntity.ok(chartJson);
         } catch (ChartGeneratingException e) {
@@ -137,14 +149,20 @@ public class ChartController {
     )
     @GetMapping("/totalCasesDeathsByCountryAndPandemic")
     public ResponseEntity<String> getTotalCasesDeathsByCountryAndPandemic(
-        Optional<Integer> countryId,
-        Optional<Integer> pandemicId
+        @Schema(
+            description = "Country (either a JSON object with minimally {country_id: number} or a link to the country)",
+            anyOf = { Country.class, String.class }
+        ) Optional<Country> country,
+        @Schema(
+            description = "Pandemic (either a JSON object with minimally {pandemic_id: number} or a link to the pandemic)",
+            anyOf = { Pandemic.class, String.class }
+        ) Optional<Pandemic> pandemic
     ) {
         try {
             String chartJson =
                 chartService.getTotalCasesDeathsByCountryAndPandemic(
-                    countryId,
-                    pandemicId
+                    country,
+                    pandemic
                 );
             return ResponseEntity.ok(chartJson);
         } catch (ChartGeneratingException e) {
@@ -183,11 +201,15 @@ public class ChartController {
     )
     @GetMapping("/top10CountriesByCasesOrDeaths")
     public ResponseEntity<String> getTop10CountriesByCasesOrDeaths(
-        Optional<Integer> pandemicId
+        @Schema(
+            description = "The pandemic to filter by (either a JSON object with minimally {pandemic_id: number}, or a link to the pandemic)",
+            anyOf = { Pandemic.class, String.class },
+            required = false
+        ) Optional<Pandemic> pandemic
     ) {
         try {
             String chartJson = chartService.getTop10CountriesByCasesOrDeaths(
-                pandemicId
+                pandemic
             );
             return ResponseEntity.ok(chartJson);
         } catch (ChartGeneratingException e) {
