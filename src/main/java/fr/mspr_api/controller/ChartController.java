@@ -8,7 +8,6 @@ import fr.mspr_api.service.ChartService;
 import fr.mspr_api.service.ChartService.ChartGeneratingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.Optional;
@@ -60,13 +59,11 @@ public class ChartController {
     )
     @GetMapping("/infectionDistributionByContinent")
     public ResponseEntity<?> getInfectionDistributionByContinent(
-        @Schema(
-            description = "The pandemic to filter by (either a JSON object with minimally {pandemic_id: number} or a link to the pandemic)",
-            anyOf = { Pandemic.class, String.class }
-        ) Pandemic pandemic
+        Integer pandemicId
     ) {
-        // The objects received are transient, so we need to fetch the pandemic from the database
-        pandemic = pandemicRepository.findById(pandemic.getId()).orElseThrow();
+        Pandemic pandemic = pandemicRepository
+            .findById(pandemicId)
+            .orElseThrow();
 
         try {
             String chartJson = chartService.getInfectionDistributionByContinent(
@@ -109,18 +106,14 @@ public class ChartController {
     )
     @GetMapping("/newCasesDeathsOverTime")
     public ResponseEntity<?> getNewCasesDeathsOverTime(
-        @Schema(
-            description = "The country to filter by (either a JSON object with minimally {country_id: number}, or a link to the country)",
-            anyOf = { Country.class, String.class }
-        ) Country country,
-        @Schema(
-            description = "The pandemic to filter by (either a JSON object with minimally {pandemic_id: number}, or a link to the pandemic)",
-            anyOf = { Pandemic.class, String.class }
-        ) Pandemic pandemic
+        Integer countryId,
+        Integer pandemicId
     ) {
         // The objects received are transient, so we need to fetch them from the database
-        country = countryRepository.findById(country.getId()).orElseThrow();
-        pandemic = pandemicRepository.findById(pandemic.getId()).orElseThrow();
+        Country country = countryRepository.findById(countryId).orElseThrow();
+        Pandemic pandemic = pandemicRepository
+            .findById(pandemicId)
+            .orElseThrow();
 
         try {
             String chartJson = chartService.getNewCasesDeathsOverTime(
@@ -164,21 +157,15 @@ public class ChartController {
     )
     @GetMapping("/totalCasesDeathsByCountryAndPandemic")
     public ResponseEntity<String> getTotalCasesDeathsByCountryAndPandemic(
-        @Schema(
-            description = "Country (either a JSON object with minimally {country_id: number} or a link to the country)",
-            anyOf = { Country.class, String.class }
-        ) Optional<Country> country,
-        @Schema(
-            description = "Pandemic (either a JSON object with minimally {pandemic_id: number} or a link to the pandemic)",
-            anyOf = { Pandemic.class, String.class }
-        ) Optional<Pandemic> pandemic
+        Optional<Integer> countryId,
+        Optional<Integer> pandemicId
     ) {
         // The objects received are transient, so we need to fetch them from the database
-        country = country.map(c ->
-            countryRepository.findById(c.getId()).orElseThrow()
+        Optional<Country> country = countryId.map(c ->
+            countryRepository.findById(c).orElseThrow()
         );
-        pandemic = pandemic.map(p ->
-            pandemicRepository.findById(p.getId()).orElseThrow()
+        Optional<Pandemic> pandemic = pandemicId.map(p ->
+            pandemicRepository.findById(p).orElseThrow()
         );
         try {
             String chartJson =
@@ -223,14 +210,10 @@ public class ChartController {
     )
     @GetMapping("/top10CountriesByCasesOrDeaths")
     public ResponseEntity<String> getTop10CountriesByCasesOrDeaths(
-        @Schema(
-            description = "The pandemic to filter by (either a JSON object with minimally {pandemic_id: number}, or a link to the pandemic)",
-            anyOf = { Pandemic.class, String.class },
-            required = false
-        ) Optional<Pandemic> pandemic
+        Optional<Integer> pandemicId
     ) {
-        pandemic = pandemic.map(p ->
-            pandemicRepository.findById(p.getId()).orElseThrow()
+        Optional<Pandemic> pandemic = pandemicId.map(p ->
+            pandemicRepository.findById(p).orElseThrow()
         );
         try {
             String chartJson = chartService.getTop10CountriesByCasesOrDeaths(
