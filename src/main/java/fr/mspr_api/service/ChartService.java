@@ -27,7 +27,9 @@ public class ChartService {
     public class ChartGeneratingException extends Exception {
 
         public ChartGeneratingException() {
-            super("{\"message\":\"Chart is being generated. Please try again later.\"}");
+            super(
+                "{\"message\":\"Chart is being generated. Please try again later.\"}"
+            );
         }
     }
 
@@ -68,7 +70,7 @@ public class ChartService {
     public String getInfectionDistributionByContinent(Pandemic pandemic)
         throws IOException, ChartGeneratingException {
         final String cacheKey =
-            "infectionDistributionByContinent_" + pandemic.getPandemicId();
+            "infectionDistributionByContinent_" + pandemic.getId();
         final String cacheFilePath = CACHE_DIR + "/" + cacheKey + ".json";
 
         File cacheFile = new File(cacheFilePath);
@@ -145,9 +147,9 @@ public class ChartService {
         throws IOException, ChartGeneratingException {
         final String cacheKey =
             "newCasesDeathsOverTime_" +
-            country.getCountryId() +
+            country.getId() +
             "_" +
-            pandemic.getPandemicId();
+            pandemic.getId();
         final String cacheFilePath = CACHE_DIR + "/" + cacheKey + ".json";
 
         File cacheFile = new File(cacheFilePath);
@@ -163,8 +165,8 @@ public class ChartService {
         generatingCharts.add(cacheKey);
 
         Infection infection = infectionRepository.findByPandemicIdAndCountryId(
-            pandemic.getPandemicId(),
-            country.getCountryId()
+            pandemic.getId(),
+            country.getId()
         );
 
         new Thread(() -> {
@@ -248,15 +250,9 @@ public class ChartService {
     ) throws IOException, ChartGeneratingException {
         final String cacheKey =
             "totalCasesDeathsByCountryAndPandemic_" +
-            country
-                .map(Country::getCountryId)
-                .map(String::valueOf)
-                .orElse("ALL") +
+            country.map(Country::getId).map(String::valueOf).orElse("ALL") +
             "_" +
-            pandemic
-                .map(Pandemic::getPandemicId)
-                .map(String::valueOf)
-                .orElse("ALL");
+            pandemic.map(Pandemic::getId).map(String::valueOf).orElse("ALL");
         final String cacheFilePath = CACHE_DIR + "/" + cacheKey + ".json";
 
         File cacheFile = new File(cacheFilePath);
@@ -278,8 +274,8 @@ public class ChartService {
                 if (country.isPresent() && pandemic.isPresent()) {
                     infections = List.of(
                         infectionRepository.findByPandemicIdAndCountryId(
-                            pandemic.get().getPandemicId(),
-                            country.get().getCountryId()
+                            pandemic.get().getId(),
+                            country.get().getId()
                         )
                     );
                 } else if (country.isPresent()) {

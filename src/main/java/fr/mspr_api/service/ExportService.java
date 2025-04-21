@@ -71,7 +71,7 @@ public class ExportService {
             Country country = infection.getCountry();
             Pandemic pandemic = infection.getPandemic();
             csv.append("\n");
-            csv.append(report.getReportId());
+            csv.append(report.getId());
             csv.append(",");
             csv.append(country.getContinent());
             csv.append(",");

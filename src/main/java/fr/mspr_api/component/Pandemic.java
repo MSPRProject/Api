@@ -103,11 +103,11 @@ public class Pandemic {
         this.notes = notes;
     }
 
-    public Integer getPandemicId() {
+    public Integer getId() {
         return pandemicId;
     }
 
-    public void setPandemicId(Integer pandemicId) {
+    public void setId(Integer pandemicId) {
         this.pandemicId = pandemicId;
     }
 

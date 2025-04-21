@@ -66,9 +66,7 @@ public class ChartController {
         ) Pandemic pandemic
     ) {
         // The objects received are transient, so we need to fetch the pandemic from the database
-        pandemic = pandemicRepository
-            .findById(pandemic.getPandemicId())
-            .orElseThrow();
+        pandemic = pandemicRepository.findById(pandemic.getId()).orElseThrow();
 
         try {
             String chartJson = chartService.getInfectionDistributionByContinent(
@@ -121,12 +119,8 @@ public class ChartController {
         ) Pandemic pandemic
     ) {
         // The objects received are transient, so we need to fetch them from the database
-        country = countryRepository
-            .findById(country.getCountryId())
-            .orElseThrow();
-        pandemic = pandemicRepository
-            .findById(pandemic.getPandemicId())
-            .orElseThrow();
+        country = countryRepository.findById(country.getId()).orElseThrow();
+        pandemic = pandemicRepository.findById(pandemic.getId()).orElseThrow();
 
         try {
             String chartJson = chartService.getNewCasesDeathsOverTime(
@@ -181,10 +175,10 @@ public class ChartController {
     ) {
         // The objects received are transient, so we need to fetch them from the database
         country = country.map(c ->
-            countryRepository.findById(c.getCountryId()).orElseThrow()
+            countryRepository.findById(c.getId()).orElseThrow()
         );
         pandemic = pandemic.map(p ->
-            pandemicRepository.findById(p.getPandemicId()).orElseThrow()
+            pandemicRepository.findById(p.getId()).orElseThrow()
         );
         try {
             String chartJson =
@@ -236,7 +230,7 @@ public class ChartController {
         ) Optional<Pandemic> pandemic
     ) {
         pandemic = pandemic.map(p ->
-            pandemicRepository.findById(p.getPandemicId()).orElseThrow()
+            pandemicRepository.findById(p.getId()).orElseThrow()
         );
         try {
             String chartJson = chartService.getTop10CountriesByCasesOrDeaths(

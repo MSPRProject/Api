@@ -94,11 +94,11 @@ public class Country {
         this.population = null;
     }
 
-    public Integer getCountryId() {
+    public Integer getId() {
         return countryId;
     }
 
-    public void setCountryId(Integer countryId) {
+    public void setId(Integer countryId) {
         this.countryId = countryId;
     }
 

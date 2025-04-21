@@ -26,6 +26,7 @@ public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_id")
+    @JsonProperty("id")
     @Schema(description = "The unique ID of the report.", example = "1")
     private Integer reportId;
 
@@ -73,11 +74,11 @@ public class Report {
         this.newDeaths = newDeaths;
     }
 
-    public Integer getReportId() {
+    public Integer getId() {
         return reportId;
     }
 
-    public void setReportId(Integer reportId) {
+    public void setId(Integer reportId) {
         this.reportId = reportId;
     }
 
