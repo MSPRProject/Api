@@ -182,9 +182,52 @@ public class ChartController {
         }
     )
     @GetMapping("/top10CountriesByCasesOrDeaths")
-    public ResponseEntity<String> getTop10CountriesByCasesOrDeaths() {
+    public ResponseEntity<String> getTop10CountriesByCasesOrDeaths(
+        Optional<Integer> pandemicId
+    ) {
         try {
-            String chartJson = chartService.getTop10CountriesByCasesOrDeaths();
+            String chartJson = chartService.getTop10CountriesByCasesOrDeaths(
+                pandemicId
+            );
+            return ResponseEntity.ok(chartJson);
+        } catch (ChartGeneratingException e) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(
+                e.getMessage()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                "An internal server error occurred."
+            );
+        }
+    }
+
+    @Operation(
+        summary = "Get chart data",
+        description = "Bar chart representing total cases and deaths by pandemic in the world."
+    )
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Chart generated successfully",
+                content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                responseCode = "202",
+                description = "Chart generation in progress",
+                content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(responseCode = "404", description = "Data not found"),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Internal server error"
+            ),
+        }
+    )
+    @GetMapping("/pandemicComparison")
+    public ResponseEntity<String> getPandemicComparison() {
+        try {
+            String chartJson = chartService.getPandemicComparison();
             return ResponseEntity.ok(chartJson);
         } catch (ChartGeneratingException e) {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(

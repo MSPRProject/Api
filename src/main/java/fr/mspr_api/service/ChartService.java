@@ -393,8 +393,9 @@ public class ChartService {
         );
     }
 
-    public String getTop10CountriesByCasesOrDeaths()
-        throws IOException, ChartGeneratingException {
+    public String getTop10CountriesByCasesOrDeaths(
+        Optional<Integer> pandemicId
+    ) throws IOException, ChartGeneratingException {
         final String cacheKey = "top10CountriesByCasesOrDeaths";
         final String cacheFilePath = CACHE_DIR + "/" + cacheKey + ".json";
 
@@ -414,8 +415,15 @@ public class ChartService {
 
         new Thread(() -> {
             try {
-                List<Infection> infections = StreamSupport.stream(
-                    infectionRepository.findAll().spliterator(),
+                Optional<Pandemic> pandemic = pandemicId.map(id ->
+                    pandemicRepository.findById(id).get()
+                );
+
+                Iterable<Infection> infections = pandemic.isPresent()
+                    ? infectionRepository.findAllByPandemic(pandemic.get())
+                    : infectionRepository.findAll();
+                infections = StreamSupport.stream(
+                    infections.spliterator(),
                     false
                 )
                     .sorted(
@@ -432,8 +440,7 @@ public class ChartService {
                     "data",
                     Map.of(
                         "labels",
-                        infections
-                            .stream()
+                        StreamSupport.stream(infections.spliterator(), false)
                             .map(i -> i.getCountry().getName())
                             .toList(),
                         "datasets",
@@ -442,8 +449,10 @@ public class ChartService {
                                 "label",
                                 "Total Cases",
                                 "data",
-                                infections
-                                    .stream()
+                                StreamSupport.stream(
+                                    infections.spliterator(),
+                                    false
+                                )
                                     .map(Infection::getTotalCases)
                                     .toList(),
                                 "backgroundColor",
@@ -453,14 +462,101 @@ public class ChartService {
                                 "label",
                                 "Total Deaths",
                                 "data",
-                                infections
-                                    .stream()
+                                StreamSupport.stream(
+                                    infections.spliterator(),
+                                    false
+                                )
                                     .map(Infection::getTotalDeaths)
                                     .toList(),
                                 "backgroundColor",
                                 "rgba(255, 99, 132, 0.6)"
                             )
                         )
+                    )
+                );
+
+                String chartJson = new ObjectMapper()
+                    .writeValueAsString(chartData);
+                Files.writeString(Paths.get(cacheFilePath), chartJson);
+            } catch (Exception e) {
+                logger.error("Error generating chart", e);
+            } finally {
+                generatingCharts.remove(cacheKey);
+            }
+        }).start();
+
+        throw new ChartGeneratingException(
+            "Chart is being generated. Please try again later."
+        );
+    }
+
+    public String getPandemicComparison()
+        throws IOException, ChartGeneratingException {
+        final String cacheKey = "pandemicComparison";
+        final String cacheFilePath = CACHE_DIR + "/" + cacheKey + ".json";
+
+        File cacheFile = new File(cacheFilePath);
+        if (cacheFile.exists()) {
+            return Files.readString(cacheFile.toPath());
+        }
+
+        if (generatingCharts.contains(cacheKey)) {
+            throw new ChartGeneratingException(
+                "Chart is being generated. Please try again later."
+            );
+        }
+
+        generatingCharts.add(cacheKey);
+
+        new Thread(() -> {
+            try {
+                Iterable<Pandemic> pandemics = pandemicRepository.findAll();
+
+                Map<String, Object> chartData = new HashMap<>();
+                chartData.put("type", "radar");
+                chartData.put(
+                    "data",
+                    Map.of(
+                        "labels",
+                        List.of(
+                            "Total Cases",
+                            "Total Deaths",
+                            "Duration (days)"
+                        ),
+                        "datasets",
+                        StreamSupport.stream(pandemics.spliterator(), false)
+                            .filter(
+                                p ->
+                                    p.getStartDate() != null &&
+                                    p.getEndDate() != null
+                            )
+                            .map(p ->
+                                Map.of(
+                                    "label",
+                                    p.getName(),
+                                    "data",
+                                    List.of(
+                                        infectionRepository
+                                            .findAllByPandemic(p)
+                                            .stream()
+                                            .mapToInt(Infection::getTotalCases)
+                                            .sum(),
+                                        infectionRepository
+                                            .findAllByPandemic(p)
+                                            .stream()
+                                            .mapToInt(Infection::getTotalDeaths)
+                                            .sum(),
+                                        (int) ((p.getEndDate().getTime() -
+                                                p.getStartDate().getTime()) /
+                                            (1000 * 60 * 60 * 24))
+                                    ),
+                                    "backgroundColor",
+                                    "rgba(75, 192, 192, 0.2)",
+                                    "borderColor",
+                                    "rgba(75, 192, 192, 1)"
+                                )
+                            )
+                            .toList()
                     )
                 );
 
