@@ -5,11 +5,9 @@ import fr.mspr_api.component.Country;
 import fr.mspr_api.component.Infection;
 import fr.mspr_api.component.Pandemic;
 import fr.mspr_api.component.Report;
-import fr.mspr_api.repository.CountryRepository;
 import fr.mspr_api.repository.InfectionRepository;
 import fr.mspr_api.repository.PandemicRepository;
 import fr.mspr_api.repository.ReportRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,6 +18,7 @@ import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -88,7 +87,10 @@ public class ChartService {
             try {
                 Map<String, Long> continentData = StreamSupport.stream(
                     infectionRepository
-                        .findAllByPandemic(pandemic)
+                        .findAllByPandemic(
+                            pandemic,
+                            PageRequest.of(0, Integer.MAX_VALUE)
+                        )
                         .spliterator(),
                     false
                 ).collect(
@@ -167,9 +169,12 @@ public class ChartService {
 
         new Thread(() -> {
             try {
-                List<Report> reports = reportRepository.findAllByInfection(
-                    infection
-                );
+                List<Report> reports = reportRepository
+                    .findAllByInfection(
+                        infection,
+                        PageRequest.of(0, Integer.MAX_VALUE)
+                    )
+                    .toList();
 
                 // Sort reports by date
                 reports.sort(Comparator.comparing(Report::getDate));
@@ -278,13 +283,19 @@ public class ChartService {
                         )
                     );
                 } else if (country.isPresent()) {
-                    infections = infectionRepository.findAllByCountry(
-                        country.get()
-                    );
+                    infections = infectionRepository
+                        .findAllByCountry(
+                            country.get(),
+                            PageRequest.of(0, Integer.MAX_VALUE)
+                        )
+                        .toList();
                 } else if (pandemic.isPresent()) {
-                    infections = infectionRepository.findAllByPandemic(
-                        pandemic.get()
-                    );
+                    infections = infectionRepository
+                        .findAllByPandemic(
+                            pandemic.get(),
+                            PageRequest.of(0, Integer.MAX_VALUE)
+                        )
+                        .toList();
                 } else {
                     infections = infectionRepository.findAll();
                 }
@@ -382,7 +393,10 @@ public class ChartService {
         new Thread(() -> {
             try {
                 Iterable<Infection> infections = pandemic.isPresent()
-                    ? infectionRepository.findAllByPandemic(pandemic.get())
+                    ? infectionRepository.findAllByPandemic(
+                        pandemic.get(),
+                        PageRequest.of(0, Integer.MAX_VALUE)
+                    )
                     : infectionRepository.findAll();
                 infections = StreamSupport.stream(
                     infections.spliterator(),
@@ -468,7 +482,9 @@ public class ChartService {
 
         new Thread(() -> {
             try {
-                Iterable<Pandemic> pandemics = pandemicRepository.findAll();
+                List<Pandemic> pandemics = pandemicRepository
+                    .findAll(PageRequest.of(0, Integer.MAX_VALUE))
+                    .toList();
 
                 Map<String, Object> chartData = new HashMap<>();
                 chartData.put("type", "radar");
@@ -495,12 +511,24 @@ public class ChartService {
                                     "data",
                                     List.of(
                                         infectionRepository
-                                            .findAllByPandemic(p)
+                                            .findAllByPandemic(
+                                                p,
+                                                PageRequest.of(
+                                                    0,
+                                                    Integer.MAX_VALUE
+                                                )
+                                            )
                                             .stream()
                                             .mapToInt(Infection::getTotalCases)
                                             .sum(),
                                         infectionRepository
-                                            .findAllByPandemic(p)
+                                            .findAllByPandemic(
+                                                p,
+                                                PageRequest.of(
+                                                    0,
+                                                    Integer.MAX_VALUE
+                                                )
+                                            )
                                             .stream()
                                             .mapToInt(Infection::getTotalDeaths)
                                             .sum(),

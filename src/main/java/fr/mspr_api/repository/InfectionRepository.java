@@ -3,7 +3,8 @@ package fr.mspr_api.repository;
 import fr.mspr_api.component.Country;
 import fr.mspr_api.component.Infection;
 import fr.mspr_api.component.Pandemic;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -12,8 +13,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface InfectionRepository
     extends CrudRepository<Infection, Integer> {
-    List<Infection> findAllByCountry(Country country);
-    List<Infection> findAllByPandemic(Pandemic pandemic);
+    Page<Infection> findAll(Pageable pageable);
+
+    Page<Infection> findAllByCountry(Country country, Pageable pageable);
+    Page<Infection> findAllByPandemic(Pandemic pandemic, Pageable pageable);
 
     @Query(
         "SELECT i FROM Infection i WHERE i.pandemic.pandemicId = :pandemic_id AND i.country.countryId = :country_id"
