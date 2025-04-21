@@ -6,11 +6,11 @@ import org.springframework.stereotype.Repository;
 import fr.mspr_api.component.Continent;
 import fr.mspr_api.component.Country;
 
+import java.util.List;
+
 @Repository
 public interface CountryRepository extends CrudRepository<Country, Integer> {
-    Country findByCountryId(Integer countryId);
     Country findByName(String name);
     Country findByIso3(String iso3);
-    Country findByContinent(Continent continent);
-    Country findByPopulation(Integer population);
+    List<Country> findAllByContinent(Continent continent);
 }

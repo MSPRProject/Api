@@ -1,9 +1,6 @@
 package fr.mspr_api.component;
 
-import java.sql.Timestamp;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,17 +11,18 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.sql.Date;
 
 @Entity
 @Table(
     name = "Report",
-    uniqueConstraints = {@UniqueConstraint(columnNames = {
-        "infection_id", 
-        "date"
-    })}
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "infection_id", "date" }),
+    }
 )
 @Schema(description = "Represents a report entity.")
 public class Report {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_id")
@@ -38,8 +36,11 @@ public class Report {
     private Infection infection;
 
     @Column(name = "date")
-    @Schema(description = "The date of the report.", example = "2023-04-15T12:00:00Z")
-    private Timestamp date;
+    @Schema(
+        description = "The date of the report.",
+        example = "2023-04-15T12:00:00Z"
+    )
+    private Date date;
 
     @Column(name = "new_cases")
     @JsonProperty("new_cases")
@@ -51,17 +52,21 @@ public class Report {
     @Schema(description = "The number of new deaths reported.", example = "20")
     private Integer newDeaths;
 
-    public Report() {
-    }
+    public Report() {}
 
     /**
      * Constructor for Report class.
      * @param infection Infection object representing the infection associated with the report.
-     * @param date Timestamp indicating when the report was created.
+     * @param date Date indicating when the report was created.
      * @param newCases Integer representing the number of new cases reported.
      * @param newDeaths Integer representing the number of new deaths reported.
      */
-    public Report(Infection infection, Timestamp date, Integer newCases, Integer newDeaths) {
+    public Report(
+        Infection infection,
+        Date date,
+        Integer newCases,
+        Integer newDeaths
+    ) {
         this.infection = infection;
         this.date = date;
         this.newCases = newCases;
@@ -84,11 +89,11 @@ public class Report {
         this.infection = infection;
     }
 
-    public Timestamp getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(Timestamp date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
@@ -110,9 +115,14 @@ public class Report {
 
     @Override
     public String toString() {
-        return this.infection +
-                "Date : " + this.date +
-                "New cases :" + this.newCases +
-                "New deaths : " + this.newDeaths;
+        return (
+            this.infection +
+            "Date : " +
+            this.date +
+            "New cases :" +
+            this.newCases +
+            "New deaths : " +
+            this.newDeaths
+        );
     }
 }
