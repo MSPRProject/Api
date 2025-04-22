@@ -171,15 +171,17 @@ public class ChartService {
 
         new Thread(() -> {
             try {
-                List<Report> reports = reportRepository
-                    .findAllByInfection(
-                        infection,
-                        PageRequest.of(0, Integer.MAX_VALUE)
-                    )
-                    .toList();
+                List<Report> reports = new ArrayList<>(
+                    reportRepository
+                        .findAllByInfection(
+                            infection,
+                            PageRequest.of(0, Integer.MAX_VALUE)
+                        )
+                        .toList()
+                );
 
                 // Sort reports by date
-                reports.sort(Comparator.comparing(Report::getDate));
+                reports.sort(Comparator.comparing((Report r) -> r.getDate()));
 
                 // Generate ChartJS data
                 Map<String, Object> chartData = new HashMap<>();
@@ -244,15 +246,9 @@ public class ChartService {
         throw new ChartGeneratingException();
     }
 
-    public String getTotalCasesDeathsByCountryAndPandemic(
-        Optional<Country> country,
-        Optional<Pandemic> pandemic
-    ) throws IOException, ChartGeneratingException {
-        final String cacheKey =
-            "totalCasesDeathsByCountryAndPandemic_" +
-            country.map(Country::getId).map(String::valueOf).orElse("ALL") +
-            "_" +
-            pandemic.map(Pandemic::getId).map(String::valueOf).orElse("ALL");
+    public String getTotalCasesDeathsByCountryAndPandemic()
+        throws IOException, ChartGeneratingException {
+        final String cacheKey = "totalCasesDeathsByCountryAndPandemic";
         final String cacheFilePath = CACHE_DIR + "/" + cacheKey + ".json";
 
         File cacheFile = new File(cacheFilePath);
@@ -269,49 +265,10 @@ public class ChartService {
 
         new Thread(() -> {
             try {
-                Iterable<Infection> infections;
-
-                if (country.isPresent() && pandemic.isPresent()) {
-                    infections = List.of(
-                        infectionRepository.findByPandemicIdAndCountryId(
-                            pandemic.get().getId(),
-                            country.get().getId()
-                        )
-                    );
-                } else if (country.isPresent()) {
-                    infections = infectionRepository
-                        .findAllByCountry(
-                            country.get(),
-                            PageRequest.of(0, Integer.MAX_VALUE)
-                        )
-                        .toList();
-                } else if (pandemic.isPresent()) {
-                    infections = infectionRepository
-                        .findAllByPandemic(
-                            pandemic.get(),
-                            PageRequest.of(0, Integer.MAX_VALUE)
-                        )
-                        .toList();
-                } else {
-                    infections = infectionRepository.findAll();
-                }
+                Iterable<Infection> infections = infectionRepository.findAll();
 
                 Map<String, Object> chartData = new HashMap<>();
                 chartData.put("type", "bar");
-
-                Map<String, Object> labels = new HashMap<>();
-                labels.put(
-                    "labels",
-                    StreamSupport.stream(infections.spliterator(), false)
-                        .map(
-                            i ->
-                                i.getCountry().getName() +
-                                " (" +
-                                i.getPandemic().getName() +
-                                ")"
-                        )
-                        .toList()
-                );
 
                 Map<String, Object> totalCases = new HashMap<>();
                 totalCases.put("label", "Total Cases");
@@ -348,7 +305,18 @@ public class ChartService {
                 totalDeathsDataset.put("data", totalDeaths);
 
                 Map<String, Object> data = new HashMap<>();
-                data.put("labels", labels);
+                data.put(
+                    "labels",
+                    StreamSupport.stream(infections.spliterator(), false)
+                        .map(
+                            i ->
+                                i.getCountry().getName() +
+                                " (" +
+                                i.getPandemic().getName() +
+                                ")"
+                        )
+                        .toList()
+                );
                 data.put(
                     "datasets",
                     List.of(totalCasesDataset, totalDeathsDataset)
@@ -371,7 +339,9 @@ public class ChartService {
 
     public String getTop10CountriesByCasesOrDeaths(Optional<Pandemic> pandemic)
         throws IOException, ChartGeneratingException {
-        final String cacheKey = "top10CountriesByCasesOrDeaths";
+        final String cacheKey =
+            "top10CountriesByCasesOrDeaths_" +
+            pandemic.map(String::valueOf).orElse("ALL");
         final String cacheFilePath = CACHE_DIR + "/" + cacheKey + ".json";
 
         File cacheFile = new File(cacheFilePath);

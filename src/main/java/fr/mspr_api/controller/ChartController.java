@@ -109,7 +109,6 @@ public class ChartController {
         Integer countryId,
         Integer pandemicId
     ) {
-        // The objects received are transient, so we need to fetch them from the database
         Country country = countryRepository.findById(countryId).orElseThrow();
         Pandemic pandemic = pandemicRepository
             .findById(pandemicId)
@@ -156,23 +155,10 @@ public class ChartController {
         }
     )
     @GetMapping("/totalCasesDeathsByCountryAndPandemic")
-    public ResponseEntity<String> getTotalCasesDeathsByCountryAndPandemic(
-        Optional<Integer> countryId,
-        Optional<Integer> pandemicId
-    ) {
-        // The objects received are transient, so we need to fetch them from the database
-        Optional<Country> country = countryId.map(c ->
-            countryRepository.findById(c).orElseThrow()
-        );
-        Optional<Pandemic> pandemic = pandemicId.map(p ->
-            pandemicRepository.findById(p).orElseThrow()
-        );
+    public ResponseEntity<String> getTotalCasesDeathsByCountryAndPandemic() {
         try {
             String chartJson =
-                chartService.getTotalCasesDeathsByCountryAndPandemic(
-                    country,
-                    pandemic
-                );
+                chartService.getTotalCasesDeathsByCountryAndPandemic();
             return ResponseEntity.ok(chartJson);
         } catch (ChartGeneratingException e) {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(
