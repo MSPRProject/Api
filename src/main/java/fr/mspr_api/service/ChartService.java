@@ -383,7 +383,13 @@ public class ChartService {
                     Map.of(
                         "labels",
                         StreamSupport.stream(infections.spliterator(), false)
-                            .map(i -> i.getCountry().getName())
+                            .map(
+                                i ->
+                                    i.getCountry().getName() +
+                                    " (" +
+                                    i.getPandemic().getName() +
+                                    ")"
+                            )
                             .toList(),
                         "datasets",
                         List.of(
