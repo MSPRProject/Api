@@ -75,4 +75,55 @@ public class AiService {
             String.class
         );
     }
+
+    public Map<String, Object> getTrainingData(Report report) {
+        List<Report> previousReports =
+            reportRepository.find100LatestByInfectionBeforeDate(
+                report.getInfection(),
+                report.getDate()
+            );
+
+        Map<String, Object> serializedInput = new HashMap<>();
+        serializedInput.put(
+            "reports",
+            previousReports
+                .stream()
+                .map(r -> {
+                    Map<String, Object> res = new HashMap<>();
+                    res.put("new_cases", r.getNewCases());
+                    res.put("new_deaths", r.getNewDeaths());
+                    res.put("date", r.getDate());
+                    return res;
+                })
+                .toList()
+        );
+
+        serializedInput.put("predict_at", report.getDate());
+        serializedInput.put(
+            "pandemic_name",
+            report.getInfection().getPandemic().getName()
+        );
+        serializedInput.put(
+            "pandemic_pathogen",
+            report.getInfection().getPandemic().getPathogen()
+        );
+        serializedInput.put(
+            "country_iso3",
+            report.getInfection().getCountry().getIso3()
+        );
+        serializedInput.put(
+            "continent",
+            report.getInfection().getCountry().getContinent()
+        );
+
+        Map<String, Object> serializedOutput = new HashMap<>();
+        serializedOutput.put("new_cases", report.getNewCases());
+        serializedOutput.put("new_deaths", report.getNewDeaths());
+
+        Map<String, Object> serializedTrainingData = new HashMap<>();
+        serializedTrainingData.put("input", serializedInput);
+        serializedTrainingData.put("output", serializedOutput);
+
+        return serializedTrainingData;
+    }
 }

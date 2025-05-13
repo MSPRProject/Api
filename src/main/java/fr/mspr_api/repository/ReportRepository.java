@@ -45,7 +45,7 @@ public interface ReportRepository extends CrudRepository<Report, Integer> {
     );
 
     @Query(
-        "SELECT r FROM Report r WHERE r.infection = :infection AND r.date <= :date ORDER BY r.date DESC LIMIT 100"
+        "SELECT r FROM Report r WHERE r.infection = :infection AND r.date < :date ORDER BY r.date DESC LIMIT 100"
     )
     List<Report> find100LatestByInfectionBeforeDate(
         @Param("infection") Infection infection,
