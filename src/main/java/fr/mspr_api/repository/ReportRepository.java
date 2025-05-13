@@ -3,6 +3,7 @@ package fr.mspr_api.repository;
 import fr.mspr_api.component.Infection;
 import fr.mspr_api.component.Report;
 import java.sql.Date;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -41,5 +42,13 @@ public interface ReportRepository extends CrudRepository<Report, Integer> {
         Date date,
         @Param("country_id") Integer countryId,
         @Param("pandemic_id") Integer pandemicId
+    );
+
+    @Query(
+        "SELECT r FROM Report r WHERE r.infection = :infection AND r.date <= :date ORDER BY r.date DESC LIMIT 100"
+    )
+    List<Report> find100LatestByInfectionBeforeDate(
+        @Param("infection") Infection infection,
+        @Param("date") Date date
     );
 }

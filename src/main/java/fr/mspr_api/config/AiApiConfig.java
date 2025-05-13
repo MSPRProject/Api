@@ -1,6 +1,8 @@
 package fr.mspr_api.config;
 
 import jakarta.validation.constraints.NotBlank;
+import java.net.URI;
+import java.net.URISyntaxException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.validation.annotation.Validated;
@@ -14,7 +16,9 @@ public class AiApiConfig {
     private String apiKey;
 
     @NotBlank
-    private String apiUrl;
+    private String apiUrlStr;
+
+    private URI apiUri;
 
     public String getApiKey() {
         return apiKey;
@@ -25,10 +29,15 @@ public class AiApiConfig {
     }
 
     public String getApiUrl() {
-        return apiUrl;
+        return apiUrlStr;
     }
 
-    public void setApiUrl(String apiUrl) {
-        this.apiUrl = apiUrl;
+    public void setApiUrl(String apiUrl) throws URISyntaxException {
+        this.apiUrlStr = apiUrl;
+        this.apiUri = new URI(apiUrl);
+    }
+
+    public URI getPromptUrl() {
+        return this.apiUri.resolve("/prompt");
     }
 }

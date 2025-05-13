@@ -1,24 +1,36 @@
 package fr.mspr_api;
 
 import fr.mspr_api.config.AiApiConfig;
-import jakarta.validation.Valid;
+import fr.mspr_api.repository.InfectionRepository;
+import fr.mspr_api.service.AiService;
+import java.sql.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.validation.annotation.Validated;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan("fr.mspr_api.config")
 public class MsprAPIApplication implements CommandLineRunner {
 
     @Autowired
-    @Valid
     private final AiApiConfig aiApiConfig;
 
-    MsprAPIApplication(@Validated AiApiConfig config) {
+    @Autowired
+    private final AiService aiService;
+
+    @Autowired
+    private final InfectionRepository infectionRepository;
+
+    MsprAPIApplication(
+        AiApiConfig config,
+        AiService service,
+        InfectionRepository infectionRepository
+    ) {
         this.aiApiConfig = config;
+        this.aiService = service;
+        this.infectionRepository = infectionRepository;
     }
 
     public static void main(String[] args) {
@@ -27,7 +39,13 @@ public class MsprAPIApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("AI API Key: " + aiApiConfig.getApiKey());
+        System.out.println(
+            "Prompt: " +
+            aiService.prompt(
+                new Date(new java.util.Date().getTime()),
+                this.infectionRepository.findById(1).get()
+            )
+        );
         System.out.println("AI API URL: " + aiApiConfig.getApiUrl());
     }
 }
