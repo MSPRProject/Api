@@ -59,7 +59,7 @@ public class AiService {
             "pandemic_pathogen",
             infection.getPandemic().getPathogen()
         );
-        serializedPrompt.put("country", infection.getCountry().getIso3());
+        serializedPrompt.put("country_iso3", infection.getCountry().getIso3());
         serializedPrompt.put(
             "continent",
             infection.getCountry().getContinent()
