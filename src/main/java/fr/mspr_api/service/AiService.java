@@ -30,7 +30,8 @@ public class AiService {
         this.reportRepository = reportRepository;
     }
 
-    public String prompt(Date predictAt, Infection infection) {
+    @SuppressWarnings("unchecked")
+    public Report predict(Date predictAt, Infection infection) {
         List<Report> reports =
             reportRepository.find100LatestByInfectionBeforeDate(
                 infection,
@@ -49,7 +50,6 @@ public class AiService {
             .toList();
 
         Map<String, Object> serializedPrompt = new HashMap<>();
-        serializedPrompt.put("predict_at", predictAt);
         serializedPrompt.put("reports", serializedReports);
         serializedPrompt.put(
             "pandemic_name",
@@ -65,15 +65,30 @@ public class AiService {
             infection.getCountry().getContinent()
         );
 
+        Map<String, Object> serializedTarget = new HashMap<>();
+        serializedTarget.put("date", predictAt);
+        serializedPrompt.put("target", serializedTarget);
+
         RestTemplate client = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + aiApiConfig.getApiKey());
 
-        return client.postForObject(
+        Map<String, Object> response = client.postForObject(
             aiApiConfig.getPromptUrl(),
             serializedPrompt,
-            String.class
+            Map.class
         );
+
+        Report report = new Report(
+            infection,
+            predictAt,
+            ((Double) response.get("new_cases")).intValue(),
+            ((Double) response.get("new_deaths")).intValue()
+        );
+
+        this.reportRepository.save(report);
+
+        return report;
     }
 
     public Map<String, Object> getTrainingData(Report report) {
@@ -83,8 +98,8 @@ public class AiService {
                 report.getDate()
             );
 
-        Map<String, Object> serializedInput = new HashMap<>();
-        serializedInput.put(
+        Map<String, Object> serializedTrainingData = new HashMap<>();
+        serializedTrainingData.put(
             "reports",
             previousReports
                 .stream()
@@ -98,20 +113,19 @@ public class AiService {
                 .toList()
         );
 
-        serializedInput.put("predict_at", report.getDate());
-        serializedInput.put(
+        serializedTrainingData.put(
             "pandemic_name",
             report.getInfection().getPandemic().getName()
         );
-        serializedInput.put(
+        serializedTrainingData.put(
             "pandemic_pathogen",
             report.getInfection().getPandemic().getPathogen()
         );
-        serializedInput.put(
+        serializedTrainingData.put(
             "country_iso3",
             report.getInfection().getCountry().getIso3()
         );
-        serializedInput.put(
+        serializedTrainingData.put(
             "continent",
             report.getInfection().getCountry().getContinent()
         );
@@ -119,10 +133,9 @@ public class AiService {
         Map<String, Object> serializedOutput = new HashMap<>();
         serializedOutput.put("new_cases", report.getNewCases());
         serializedOutput.put("new_deaths", report.getNewDeaths());
+        serializedOutput.put("date", report.getDate());
 
-        Map<String, Object> serializedTrainingData = new HashMap<>();
-        serializedTrainingData.put("input", serializedInput);
-        serializedTrainingData.put("output", serializedOutput);
+        serializedTrainingData.put("target", serializedOutput);
 
         return serializedTrainingData;
     }

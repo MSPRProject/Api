@@ -1,8 +1,10 @@
 package fr.mspr_api.controller;
 
 import fr.mspr_api.component.Report;
+import fr.mspr_api.repository.InfectionRepository;
 import fr.mspr_api.repository.ReportRepository;
 import fr.mspr_api.service.AiService;
+import java.sql.Date;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,12 +25,17 @@ class AiController {
     @Autowired
     private final ReportRepository reportRepository;
 
+    @Autowired
+    private final InfectionRepository infectionRepository;
+
     public AiController(
         AiService aiService,
-        ReportRepository reportRepository
+        ReportRepository reportRepository,
+        InfectionRepository infectionRepository
     ) {
         this.aiService = aiService;
         this.reportRepository = reportRepository;
+        this.infectionRepository = infectionRepository;
     }
 
     @GetMapping("/trainingData")
@@ -42,5 +50,20 @@ class AiController {
             pageable,
             reportRepository.count()
         );
+    }
+
+    @GetMapping("/predict")
+    public Report predict(
+        @RequestParam(required = true) int country_id,
+        @RequestParam(required = true) int pandemic_id,
+        @RequestParam(required = true) Date predict_at
+    ) {
+        return this.aiService.predict(
+                predict_at,
+                infectionRepository.findByPandemicIdAndCountryId(
+                    pandemic_id,
+                    country_id
+                )
+            );
     }
 }

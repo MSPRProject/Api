@@ -38,6 +38,6 @@ public class AiApiConfig {
     }
 
     public URI getPromptUrl() {
-        return this.apiUri.resolve("/prompt");
+        return this.apiUri.resolve("/predict");
     }
 }
