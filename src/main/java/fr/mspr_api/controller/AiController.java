@@ -58,6 +58,16 @@ class AiController {
         @RequestParam(required = true) int pandemic_id,
         @RequestParam(required = true) Date predict_at
     ) {
+        var report = reportRepository.findByDateAndCountryIdAndPandemicId(
+            predict_at,
+            country_id,
+            pandemic_id
+        );
+
+        if (report != null) {
+            return report;
+        }
+
         return this.aiService.predict(
                 predict_at,
                 infectionRepository.findByPandemicIdAndCountryId(
