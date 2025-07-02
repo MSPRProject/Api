@@ -24,7 +24,8 @@ jobs:
           ./mvnw sonar:sonar \
             -Dsonar.projectKey=MSPRProject_Api \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.organization=MSPRProject
 
   test:
     runs-on: ubuntu-latest
