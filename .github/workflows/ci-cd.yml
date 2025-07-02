@@ -22,7 +22,7 @@ jobs:
         run: |
           chmod +x ./mvnw
           ./mvnw sonar:sonar \
-            -Dsonar.projectKey=MSPRProject_Front \
+            -Dsonar.projectKey=MSPRProject_Api \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
