@@ -79,6 +79,7 @@ jobs:
         with:
           target: "http://localhost:8080"
           rules_file_name: ".zap/rules.tsv"
+          docker_name: zaproxy/zap-stable
           fail_action: true
       - name: Stop the application
         run: |
