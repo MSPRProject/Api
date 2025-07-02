@@ -32,6 +32,16 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: sanalyz
+          POSTGRES_PASSWORD: sanalyz
+          POSTGRES_DB: sanalyz
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 21
