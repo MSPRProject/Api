@@ -18,9 +18,12 @@ jobs:
         with:
           java-version: "21"
           distribution: "temurin"
-      - name: Run SonarQube analysis
+      - name: Compile the project
         run: |
           chmod +x ./mvnw
+          ./mvnw clean compile
+      - name: Run SonarQube analysis
+        run: |
           ./mvnw sonar:sonar \
             -Dsonar.projectKey=MSPRProject_Api \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
