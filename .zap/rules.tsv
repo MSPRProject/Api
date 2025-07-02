@@ -1,2 +1,1 @@
-Rule ID	Enabled	Risk	Confidence	Custom Configuration
-10105	false	Medium	Medium
+10105	IGNORE  Weak Authentication Method
