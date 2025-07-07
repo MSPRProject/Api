@@ -55,8 +55,7 @@ jobs:
           ./mvnw test
 
   owasp-zap:
-    permissions:
-      issues: write
+    permissions: write-all
     runs-on: ubuntu-latest
     services:
       postgres:
