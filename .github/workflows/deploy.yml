@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: sanalyz-api
+  IMAGE_NAME: MSPRProject/sanalyz-api
 
 jobs:
   build-and-push-images:
