@@ -8,3 +8,4 @@ COPY src ./src
 EXPOSE 8080
 
 CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.arguments=--server.address=0.0.0.0"]
+CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.arguments=--server.address=0.0.0.0"]
