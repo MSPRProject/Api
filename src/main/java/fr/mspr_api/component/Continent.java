@@ -10,5 +10,14 @@ public enum Continent {
     SOUTH_AMERICA,
     AFRICA,
     OCEANIA,
-    ANTARCTICA
+    ANTARCTICA;
+
+    @Override
+    public String toString() {
+        String lowercase = name().toLowerCase();
+        lowercase =
+            lowercase.substring(0, 1).toUpperCase() + lowercase.substring(1);
+        lowercase = lowercase.replace("_", " ");
+        return lowercase;
+    }
 }

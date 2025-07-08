@@ -1,9 +1,6 @@
 package fr.mspr_api.component;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,17 +14,18 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 @Table(
     name = "Infection",
-    uniqueConstraints = {@UniqueConstraint(columnNames = {
-        "country_id", 
-        "pandemic_id"
-    })}
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "country_id", "pandemic_id" }),
+    }
 )
 @Schema(description = "Represents an infection entity.")
 public class Infection {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "infection_id")
@@ -50,12 +48,18 @@ public class Infection {
     private Pandemic pandemic;
 
     @Column(name = "total_cases")
-    @Schema(description = "The total number of cases of the infection.", example = "100000")
+    @Schema(
+        description = "The total number of cases of the infection.",
+        example = "100000"
+    )
     @JsonProperty("total_cases")
     private Integer totalCases;
 
     @Column(name = "total_deaths")
-    @Schema(description = "The total number of deaths caused by the infection.", example = "5000")
+    @Schema(
+        description = "The total number of deaths caused by the infection.",
+        example = "5000"
+    )
     @JsonProperty("total_deaths")
     private Integer totalDeaths;
 
@@ -67,8 +71,7 @@ public class Infection {
     @Schema(description = "The list of reports associated with the infection.")
     private List<Report> reports;
 
-    public Infection() {
-    }
+    public Infection() {}
 
     /**
      * Constructor for Infection class.
@@ -77,18 +80,23 @@ public class Infection {
      * @param totalCases Integer representing the total number of cases of the infection.
      * @param totalDeaths Integer representing the total number of deaths caused by the infection.
      */
-    public Infection(Country country, Pandemic pandemic, Integer totalCases, Integer totalDeaths) {
+    public Infection(
+        Country country,
+        Pandemic pandemic,
+        Integer totalCases,
+        Integer totalDeaths
+    ) {
         this.country = country;
         this.pandemic = pandemic;
         this.totalCases = totalCases;
         this.totalDeaths = totalDeaths;
     }
 
-    public Integer getInfectionId() {
+    public Integer getId() {
         return infectionId;
     }
 
-    public void setInfectionId(Integer infectionId) {
+    public void setId(Integer infectionId) {
         this.infectionId = infectionId;
     }
 
@@ -126,6 +134,15 @@ public class Infection {
 
     @Override
     public String toString() {
-        return this.pandemic.getName() + " in " + this.country + " : " + this.totalCases + " cases and " + this.totalDeaths + " deaths";
+        return (
+            this.pandemic.getName() +
+            " in " +
+            this.country +
+            " : " +
+            this.totalCases +
+            " cases and " +
+            this.totalDeaths +
+            " deaths"
+        );
     }
 }

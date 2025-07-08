@@ -1,16 +1,17 @@
 package fr.mspr_api.repository;
 
+import fr.mspr_api.component.Continent;
+import fr.mspr_api.component.Country;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import fr.mspr_api.component.Continent;
-import fr.mspr_api.component.Country;
-
 @Repository
 public interface CountryRepository extends CrudRepository<Country, Integer> {
-    Country findByCountryId(Integer countryId);
+    Page<Country> findAll(Pageable pageable);
+
     Country findByName(String name);
     Country findByIso3(String iso3);
-    Country findByContinent(Continent continent);
-    Country findByPopulation(Integer population);
+    Page<Country> findAllByContinent(Continent continent, Pageable pageable);
 }
